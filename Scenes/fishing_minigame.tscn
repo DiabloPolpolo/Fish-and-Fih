@@ -1,0 +1,214 @@
+[gd_scene load_steps=16 format=3 uid="uid://brs7n1hdkikij"]
+
+[ext_resource type="Script" path="res://Scripts/fishing_minigame.gd" id="1_dyoii"]
+[ext_resource type="Texture2D" uid="uid://c6e50urd2fm2o" path="res://Assets/Clouds/fishbarcrop.png" id="2_blj5q"]
+[ext_resource type="Texture2D" uid="uid://chvsqc57luwu8" path="res://newassets/Pixel UI pack 3/07.png" id="3_rty60"]
+[ext_resource type="Texture2D" uid="uid://caxqtms40oqhp" path="res://Assets/Clouds/bg fish.png" id="4_ubmsg"]
+[ext_resource type="FontFile" uid="uid://p71svfp1bvck" path="res://Assets/fonts/PixelOperator8-Bold.ttf" id="6_8363w"]
+[ext_resource type="AudioStream" uid="uid://dqj6fpkq2l08r" path="res://Assets/sound/WhatsApp Audio 2025-12-16 at 21.04.38 (1) (1).mp3" id="6_ew0ed"]
+[ext_resource type="AudioStream" uid="uid://bo6kf8rfyuwja" path="res://Assets/sound/fishing-reel-302355.mp3" id="7_6gna5"]
+[ext_resource type="AudioStream" uid="uid://dqi53tmji4h71" path="res://Assets/sound/old-fishing-reel-slow-rewinding-fishing-line-297886.mp3" id="8_uft35"]
+[ext_resource type="AudioStream" uid="uid://0ycjvj44qqnd" path="res://Assets/sound/notification-bell-sound-376888.mp3" id="9_wwteu"]
+[ext_resource type="AudioStream" uid="uid://b2qb5eowxmc01" path="res://Assets/sound/mi-bombo.mp3" id="10_sm5ow"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_eimrb"]
+texture = ExtResource("3_rty60")
+region_rect = Rect2(34.7281, 177.903, 26.2854, 28.309)
+modulate_color = Color(0.67, 0.67, 0.67, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_paoue"]
+texture = ExtResource("3_rty60")
+region_rect = Rect2(134.97, 251.908, 3.02765, 24.2481)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_xxdbu"]
+texture = ExtResource("3_rty60")
+region_rect = Rect2(55.0162, 256.642, 2.98907, 3.85965)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ghpl6"]
+bg_color = Color(0.101961, 0.101961, 0.180392, 0.933333)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.463583, 0.5, 0.385, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.533333)
+shadow_size = 10
+shadow_offset = Vector2(0, 6)
+
+[sub_resource type="LabelSettings" id="LabelSettings_27nji"]
+font = ExtResource("6_8363w")
+
+[node name="FishingMinigame" type="CanvasLayer"]
+script = ExtResource("1_dyoii")
+
+[node name="background" type="Control" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 4
+
+[node name="fishminigame" type="Control" parent="background"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 300)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="fishbar" type="TextureRect" parent="background/fishminigame"]
+unique_name_in_owner = true
+modulate = Color(0.82606, 0.82606, 0.82606, 1)
+custom_minimum_size = Vector2(800, 100)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.216049
+anchor_right = 0.5
+anchor_bottom = 0.216049
+offset_left = -400.0
+offset_top = -50.0
+offset_right = 400.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_blj5q")
+metadata/_edit_use_anchors_ = true
+
+[node name="inbox" type="PanelContainer" parent="background/fishminigame"]
+unique_name_in_owner = true
+modulate = Color(0.864675, 0.864675, 0.864675, 1)
+top_level = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.217593
+anchor_right = 0.5
+anchor_bottom = 0.217593
+offset_left = -53.5
+offset_top = -40.0
+offset_right = 53.5
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_eimrb")
+metadata/_edit_use_anchors_ = true
+
+[node name="fish" type="TextureRect" parent="background/fishminigame"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.220679
+anchor_right = 0.5
+anchor_bottom = 0.220679
+offset_left = -46.0
+offset_top = -31.5
+offset_right = 46.0
+offset_bottom = 31.5
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_ubmsg")
+metadata/_edit_use_anchors_ = true
+
+[node name="ProgressBar" type="ProgressBar" parent="background/fishminigame"]
+unique_name_in_owner = true
+modulate = Color(0.864675, 0.864675, 0.864675, 1)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.216049
+anchor_right = 0.5
+anchor_bottom = 0.216049
+offset_left = 321.0
+offset_top = 68.0
+offset_right = 367.0
+offset_bottom = 701.004
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 1.5708
+theme_override_styles/background = SubResource("StyleBoxTexture_paoue")
+theme_override_styles/fill = SubResource("StyleBoxTexture_xxdbu")
+value = 20.0
+fill_mode = 3
+show_percentage = false
+metadata/_edit_use_anchors_ = true
+
+[node name="ResultPanel" type="Panel" parent="background"]
+unique_name_in_owner = true
+visible = false
+z_index = -1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -269.5
+offset_top = -194.5
+offset_right = 269.5
+offset_bottom = 194.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ghpl6")
+
+[node name="Labelfishname" type="Label" parent="background"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.282118
+anchor_top = 0.614692
+anchor_right = 0.717882
+anchor_bottom = 0.715556
+offset_left = -3.0
+offset_top = -0.320007
+offset_right = -3.0
+offset_bottom = 0.319977
+grow_horizontal = 2
+grow_vertical = 0
+label_settings = SubResource("LabelSettings_27nji")
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="CaughtFishImage" type="TextureRect" parent="background"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.407118
+anchor_top = 0.367284
+anchor_right = 0.582465
+anchor_bottom = 0.651235
+offset_left = 3.0
+offset_top = -30.0
+offset_right = 3.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MinigameSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_ew0ed")
+
+[node name="ReelingSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_6gna5")
+
+[node name="DereelSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_uft35")
+
+[node name="RewardSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("9_wwteu")
+
+[node name="LineBreakSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("10_sm5ow")

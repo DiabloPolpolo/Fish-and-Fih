@@ -1,0 +1,116 @@
+[gd_scene load_steps=9 format=3 uid="uid://dinbtgkf53bph"]
+
+[ext_resource type="Script" path="res://Scripts/main_menu.gd" id="1_ukxna"]
+[ext_resource type="Texture2D" uid="uid://cbh53cxiljg5y" path="res://Assets/Clouds/Clouds 3/1.png" id="2_7m2e0"]
+[ext_resource type="Texture2D" uid="uid://gee6w0v3fcsa" path="res://Assets/Clouds/Clouds 3/2.png" id="3_nfjsi"]
+[ext_resource type="FontFile" uid="uid://bma1icmk6wow4" path="res://Assets/fonts/PixelOperator8.ttf" id="3_r7f2m"]
+[ext_resource type="FontFile" uid="uid://p71svfp1bvck" path="res://Assets/fonts/PixelOperator8-Bold.ttf" id="4_kdwpn"]
+[ext_resource type="Texture2D" uid="uid://drmlq813anfkk" path="res://Assets/Clouds/Clouds 3/3.png" id="4_rsffo"]
+[ext_resource type="Texture2D" uid="uid://beeck1pq141vw" path="res://Assets/Clouds/Clouds 3/4.png" id="5_34bmi"]
+[ext_resource type="Texture2D" uid="uid://c7yu55njnssj1" path="res://Assets/download.png" id="8_ujmfg"]
+
+[node name="MainMenu" type="CanvasLayer"]
+script = ExtResource("1_ukxna")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(824, 459.75)
+scale = Vector2(2.87847, 3.03241)
+texture = ExtResource("2_7m2e0")
+
+[node name="2" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(762.75, 410.25)
+scale = Vector2(3.01823, 3.35031)
+texture = ExtResource("3_nfjsi")
+
+[node name="3" type="Sprite2D" parent="."]
+z_index = 1
+position = Vector2(821.5, 480.5)
+scale = Vector2(2.84201, 2.94753)
+texture = ExtResource("4_rsffo")
+
+[node name="ButtonManager" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Start" type="Button" parent="ButtonManager"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.5
+offset_top = -72.5
+offset_right = 150.5
+offset_bottom = 72.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("3_r7f2m")
+text = "Play"
+
+[node name="Quit" type="Button" parent="ButtonManager"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -148.5
+offset_top = 82.5
+offset_right = 148.5
+offset_bottom = 231.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_r7f2m")
+text = "Quit"
+
+[node name="Label" type="Label" parent="ButtonManager"]
+z_index = 7
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.31
+offset_left = -206.0
+offset_top = 73.0
+offset_right = 193.0
+offset_bottom = 112.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("4_kdwpn")
+theme_override_font_sizes/font_size = 60
+text = "FISH and FIH"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="4" type="Sprite2D" parent="."]
+z_index = 1
+position = Vector2(822, 479)
+scale = Vector2(2.85764, 2.98148)
+texture = ExtResource("5_34bmi")
+
+[node name="Label" type="Label" parent="."]
+z_index = 7
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 785.0
+offset_right = -840.0
+offset_bottom = 278.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_r7f2m")
+text = "Made by Hexaclone Stella"
+
+[node name="Download" type="Sprite2D" parent="."]
+z_index = 1
+position = Vector2(217, 864)
+texture = ExtResource("8_ujmfg")
+
+[connection signal="pressed" from="ButtonManager/Start" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="ButtonManager/Quit" to="." method="_on_quit_pressed"]
