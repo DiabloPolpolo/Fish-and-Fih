@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=4 uid="uid://d18ngsycnrhtu"]
+[gd_scene load_steps=23 format=4 uid="uid://d18ngsycnrhtu"]
 
 [ext_resource type="Texture2D" uid="uid://bhq25bxok3ewa" path="res://Assets/Fantasy Swamp Forest/Free/Terrain_and_Props.png" id="1_ce77i"]
 [ext_resource type="Script" path="res://Scenes/world.gd" id="1_dxeet"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://jlyan0se0ghs" path="res://Assets/Free Pixel Art Forest/PNG/Background layers/Layer_0003_6.png" id="5_rk18k"]
 [ext_resource type="AudioStream" uid="uid://ctq381vi08jjm" path="res://Assets/sound/WhatsApp Audio 2025-12-16 at 21.04.38 (2).mp3" id="8_mymc1"]
 [ext_resource type="FontFile" uid="uid://bma1icmk6wow4" path="res://Assets/fonts/PixelOperator8.ttf" id="10_id3ue"]
+[ext_resource type="PackedScene" uid="uid://bxj7qm2kp5tnh" path="res://Scenes/pause_menu.tscn" id="11_pause"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wt6x0"]
 texture = ExtResource("1_ce77i")
@@ -1237,6 +1238,9 @@ occluder = SubResource("OccluderPolygon2D_doi2o")
 stream = ExtResource("8_mymc1")
 autoplay = true
 parameters/looping = true
+bus = &"Music"
+
+[node name="PauseMenu" parent="." instance=ExtResource("11_pause")]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
