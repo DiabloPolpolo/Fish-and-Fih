@@ -4,10 +4,12 @@ extends CanvasLayer
 
 @onready var pause_panel: Panel = $PausePanel
 @onready var settings_panel: Panel = $SettingsPanel
+@onready var reset_confirm_dialog: Panel = $ResetConfirmDialog
 @onready var master_slider: HSlider = $SettingsPanel/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/MasterSlider
 @onready var music_slider: HSlider = $SettingsPanel/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/MusicSlider
 @onready var sfx_slider: HSlider = $SettingsPanel/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/SFXSlider
 @onready var brightness_slider: HSlider = $SettingsPanel/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/BrightnessSlider
+
 
 var is_paused: bool = false
 
@@ -80,7 +82,30 @@ func apply_brightness() -> void:
 		canvas_modulate.color = Color(brightness_value, brightness_value, brightness_value, 1.0)
 
 
+
 func _on_reset_data_pressed() -> void:
+	# Show confirmation dialog instead of immediately resetting
+	settings_panel.visible = false
+	reset_confirm_dialog.visible = true
+
+func _on_reset_cancel_pressed() -> void:
+	# Close confirmation dialog and return to settings
+	reset_confirm_dialog.visible = false
+	settings_panel.visible = true
+
+func _on_reset_confirm_pressed() -> void:
+	# Reset the data
 	SessionManager.reset_player_data()
 	print("Player data has been reset!")
+	
+	# Unpause the game
+	get_tree().paused = false
+	
+	# Clean up any active minigame nodes that may be lingering
+	for child in get_tree().root.get_children():
+		if child.name == "FishingMinigame":
+			child.queue_free()
+	
+	# Redirect to main menu
+	get_tree().change_scene_to_file("res://Scenes/main_menu.tscn")
 

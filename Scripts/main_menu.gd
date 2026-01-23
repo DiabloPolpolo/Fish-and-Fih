@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 @onready var settings_panel: Panel = $SettingsPanel
+@onready var reset_confirm_dialog: Panel = $ResetConfirmDialog
 @onready var button_manager: Control = $ButtonManager
 
 func _ready() -> void:
@@ -39,5 +40,20 @@ func _on_brightness_slider_value_changed(value: float) -> void:
 
 
 func _on_reset_data_pressed() -> void:
+	# Show confirmation dialog instead of immediately resetting
+	settings_panel.visible = false
+	reset_confirm_dialog.visible = true
+
+func _on_reset_cancel_pressed() -> void:
+	# Close confirmation dialog and return to settings
+	reset_confirm_dialog.visible = false
+	settings_panel.visible = true
+
+func _on_reset_confirm_pressed() -> void:
+	# Reset the data
 	SessionManager.reset_player_data()
 	print("Player data has been reset!")
+	
+	# Close confirmation dialog and return to settings
+	reset_confirm_dialog.visible = false
+	settings_panel.visible = true
