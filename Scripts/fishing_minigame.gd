@@ -23,8 +23,8 @@ signal play_end_animation() # ⭐ New: trigger player end_fih animation early
 @onready var line_break_sound: AudioStreamPlayer = $LineBreakSound
 
 const BASE_BAR_HEIGHT := 20.0
-const BASE_ESCAPE_DRAIN := 30.0
-const PROGRESS_GAIN := 1000.0
+const BASE_ESCAPE_DRAIN := 25.0
+const PROGRESS_GAIN := 50.0
 const TREASURE_FILL_RATE := 55.0
 const TREASURE_NEED := 50
 const FISH_FLIP_THRESHOLD := 0.03
