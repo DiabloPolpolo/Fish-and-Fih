@@ -1,7 +1,7 @@
-[gd_scene load_steps=23 format=4 uid="uid://d18ngsycnrhtu"]
+[gd_scene load_steps=25 format=4 uid="uid://d18ngsycnrhtu"]
 
 [ext_resource type="Texture2D" uid="uid://bhq25bxok3ewa" path="res://Assets/Fantasy Swamp Forest/Free/Terrain_and_Props.png" id="1_ce77i"]
-[ext_resource type="Script" path="res://Scenes/world.gd" id="1_dxeet"]
+[ext_resource type="Script" uid="uid://e1x5fa4t6j5i" path="res://Scenes/world.gd" id="1_dxeet"]
 [ext_resource type="Texture2D" uid="uid://cnqypm2roc6e5" path="res://Assets/Fantasy Swamp Forest/Free/Terrain-and-Props-OLD.png" id="2_6iq7s"]
 [ext_resource type="Texture2D" uid="uid://bdpu3y7xcuchn" path="res://Assets/Free Pixel Art Forest/PNG/Background layers/Layer_0005_5.png" id="3_j6qxm"]
 [ext_resource type="Texture2D" uid="uid://cbh53cxiljg5y" path="res://Assets/Clouds/Clouds 3/1.png" id="4_kp20w"]
@@ -11,8 +11,8 @@
 [ext_resource type="AudioStream" uid="uid://ctq381vi08jjm" path="res://Assets/sound/WhatsApp Audio 2025-12-16 at 21.04.38 (2).mp3" id="8_mymc1"]
 [ext_resource type="FontFile" uid="uid://bma1icmk6wow4" path="res://Assets/fonts/PixelOperator8.ttf" id="10_id3ue"]
 [ext_resource type="PackedScene" uid="uid://bxj7qm2kp5tnh" path="res://Scenes/pause_menu.tscn" id="11_pause"]
-[ext_resource type="PackedScene" path="res://Scenes/UI/hud.tscn" id="12_hud"]
-[ext_resource type="PackedScene" path="res://Scenes/UI/shop.tscn" id="13_shop"]
+[ext_resource type="PackedScene" uid="uid://b8kjpieig1f3b" path="res://Scenes/UI/hud.tscn" id="12_hud"]
+[ext_resource type="PackedScene" uid="uid://csc4gyr7eq1th" path="res://Scenes/UI/shop.tscn" id="13_shop"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wt6x0"]
 texture = ExtResource("1_ce77i")
@@ -1139,8 +1139,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_t8vqg"]
 _data = {
-"RESET": SubResource("Animation_u2g78"),
-"fade_in": SubResource("Animation_fne5u")
+&"RESET": SubResource("Animation_u2g78"),
+&"fade_in": SubResource("Animation_fne5u")
 }
 
 [node name="World" type="Node2D"]
@@ -1239,8 +1239,8 @@ occluder = SubResource("OccluderPolygon2D_doi2o")
 [node name="MainBGM" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("8_mymc1")
 autoplay = true
-parameters/looping = true
 bus = &"Music"
+parameters/looping = true
 
 [node name="PauseMenu" parent="." instance=ExtResource("11_pause")]
 
@@ -1261,7 +1261,7 @@ color = Color(0, 0, 0, 1)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer/FadeRect"]
 libraries = {
-"": SubResource("AnimationLibrary_t8vqg")
+&"": SubResource("AnimationLibrary_t8vqg")
 }
 
 [node name="Control" type="Control" parent="."]

@@ -2,6 +2,7 @@ extends CanvasLayer
 
 signal fishing_finished(success, fish, value)
 signal bucket_full(fish_instance)
+signal play_end_animation() # ⭐ New: trigger player end_fih animation early
 
 @export var fish: FishType
 @export var rod: RodType
@@ -12,9 +13,7 @@ signal bucket_full(fish_instance)
 @onready var catch_bar: PanelContainer = %inbox
 @onready var fish_icon: TextureRect = %fish
 @onready var progress: Control = %ProgressBar
-@onready var label_name: Label = %Labelfishname
-@onready var caught_fish_image: TextureRect = %CaughtFishImage 
-@onready var result_panel: Panel = %ResultPanel
+@onready var result_panel: PanelContainer = %ResultPanel
 
 # ⭐ AUDIO PLAYERS
 @onready var minigame_sound: AudioStreamPlayer = $MinigameSound
@@ -25,12 +24,12 @@ signal bucket_full(fish_instance)
 
 const BASE_BAR_HEIGHT := 20.0
 const BASE_ESCAPE_DRAIN := 30.0
-const PROGRESS_GAIN := 100.0
+const PROGRESS_GAIN := 400.0
 const TREASURE_FILL_RATE := 55.0
 const TREASURE_NEED := 50
 const FISH_FLIP_THRESHOLD := 0.03
 
-enum STATE { HIDDEN, READY, PLAYING, END }
+enum STATE {HIDDEN, READY, PLAYING, END}
 
 var _state: STATE = STATE.HIDDEN
 var _elapsed: float = 0.0
@@ -47,7 +46,7 @@ var _treasure_val: float = 0.0
 var _fish_seed: float
 var _fish_size: float = 0.0
 var _fish_weight: float = 0.0
-var _is_reeling: bool = false  # ⭐ Track reeling state untuk sound
+var _is_reeling: bool = false # ⭐ Track reeling state untuk sound
 
 
 func _ready():
@@ -88,13 +87,6 @@ func _reset_game():
 	
 	if is_instance_valid(progress):
 		progress.value = _progress_val
-	
-	if is_instance_valid(label_name) and fish:
-		if _fish_size > 0 and _fish_weight > 0:
-			label_name.text = "%s | %.1fcm | %.2fkg" % [fish.fish_name, _fish_size, _fish_weight]
-		else:
-			label_name.text = fish.fish_name
-		label_name.hide()
 
 	_set_defaults()
 
@@ -214,7 +206,7 @@ func _physics_process(delta: float):
 
 		STATE.PLAYING:
 			_update_input_bar(delta)
-			_update_fish_motion(delta)  # ⭐ Ikan bergerak di PLAYING
+			_update_fish_motion(delta) # ⭐ Ikan bergerak di PLAYING
 			_handle_collisions(delta)
 			_update_progress_ui()
 
@@ -289,88 +281,113 @@ func _success():
 		bucket_full.emit(fish_instance)
 		print("⚠️ Bucket full! Fish not added.")
 	
-	# Hide UI elements
+	# ⭐ STEP 1: Hide minigame UI elements with fade
 	var ui_elements = [bar_track, catch_bar, fish_icon, progress]
 	for element in ui_elements:
 		if is_instance_valid(element):
 			var tween_hide = create_tween()
 			tween_hide.tween_property(element, "modulate:a", 0.0, 0.3)
 	
-	# Show result panel
+	await get_tree().create_timer(0.3).timeout
+	
+	# ⭐ STEP 2: Emit signal for player to play end_fih animation
+	print("🎬 Signaling player to play end_fih animation...")
+	play_end_animation.emit()
+	
+	# ⭐ STEP 3: Wait for end_fih animation to complete (6 frames at 5fps = 1.2s + buffer)
+	print("🎬 Waiting for end_fih animation...")
+	await get_tree().create_timer(1.5).timeout
+	
+	# ⭐ STEP 4: NOW show result panel with bounce
 	if is_instance_valid(result_panel):
 		result_panel.modulate.a = 0.0
-		result_panel.scale = Vector2(0.7, 0.7)
+		result_panel.scale = Vector2(0.5, 0.5)
 		result_panel.show()
 		
 		var tween_panel = create_tween().set_parallel(true)
-		tween_panel.tween_property(result_panel, "modulate:a", 1.0, 0.5)
-		tween_panel.tween_property(result_panel, "scale", Vector2(1.05, 1.05), 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tween_panel.tween_property(result_panel, "scale", Vector2.ONE, 0.1).set_delay(0.4)
-		
-		print("📋 Panel shown!")
+		tween_panel.tween_property(result_panel, "modulate:a", 1.0, 0.4)
+		tween_panel.tween_property(result_panel, "scale", Vector2(1.1, 1.1), 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tween_panel.tween_property(result_panel, "scale", Vector2.ONE, 0.15).set_delay(0.3)
 	
-	await get_tree().create_timer(0.3).timeout
+	_shake(8.0, 0.2)
 	
-	# Setup fish image
-	if is_instance_valid(caught_fish_image):
+	await get_tree().create_timer(0.2).timeout
+	
+	# ⭐ Get new Pixel Worlds-style UI elements
+	var fish_name_label = result_panel.get_node_or_null("MainVBox/ContentMargin/ContentVBox/FishNameBadge/FishNameLabel")
+	var caught_fish_img = result_panel.get_node_or_null("MainVBox/ContentMargin/ContentVBox/FishImageContainer/CenterContainer/CaughtFishImage")
+	var weight_label = result_panel.get_node_or_null("MainVBox/ContentMargin/ContentVBox/StatsRow/WeightLabel")
+	var value_label = result_panel.get_node_or_null("MainVBox/ContentMargin/ContentVBox/StatsRow/ValueLabel")
+	var take_fish_btn = result_panel.get_node_or_null("MainVBox/ContentMargin/ContentVBox/TakeFishButton")
+	
+	# ⭐ Get rarity string for fish name display
+	var rarity_display = ""
+	match rarity_str:
+		"C":
+			rarity_display = "Common"
+		"U":
+			rarity_display = "Uncommon"
+		"R":
+			rarity_display = "Rare"
+		"E":
+			rarity_display = "Epic"
+		"L":
+			rarity_display = "Legendary"
+	
+	# ⭐ Update fish name (without rarity)
+	if is_instance_valid(fish_name_label):
+		fish_name_label.text = fish.fish_name
+	
+	# ⭐ Setup fish image with bounce animation
+	if is_instance_valid(caught_fish_img):
 		var fish_texture: Texture2D = null
-		
 		if fish:
 			var sprite = fish.get("fish_sprite")
 			if sprite != null and sprite is Texture2D:
 				fish_texture = sprite
-		
 		if fish_texture == null and is_instance_valid(fish_icon):
 			fish_texture = fish_icon.texture
 		
 		if fish_texture:
-			caught_fish_image.texture = fish_texture
-			caught_fish_image.modulate.a = 0.0
-			caught_fish_image.scale = Vector2(0.3, 0.3)
-			caught_fish_image.show()
+			caught_fish_img.texture = fish_texture
+			caught_fish_img.modulate.a = 0.0
+			caught_fish_img.scale = Vector2(0.3, 0.3)
 			
 			var tween_fish = create_tween().set_parallel(true)
-			tween_fish.tween_property(caught_fish_image, "modulate:a", 1.0, 0.5)
-			tween_fish.tween_property(caught_fish_image, "scale", Vector2(1.0, 1.0), 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			tween_fish.tween_property(caught_fish_img, "modulate:a", 1.0, 0.4)
+			tween_fish.tween_property(caught_fish_img, "scale", Vector2(1.2, 1.2), 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			tween_fish.tween_property(caught_fish_img, "scale", Vector2.ONE, 0.1).set_delay(0.35)
 	
-	await get_tree().create_timer(0.2).timeout
+	await get_tree().create_timer(0.15).timeout
 	
-	# Setup label
-	if is_instance_valid(label_name):
-		label_name.text = "%s\n%.1fcm | %.2fkg | $%d" % [fish.fish_name, _fish_size, _fish_weight, fish_value]
-		label_name.modulate.a = 0.0
-		label_name.scale = Vector2(0.5, 0.5)
-		label_name.show()
-		
-		var tween_in = create_tween().set_parallel(true)
-		tween_in.tween_property(label_name, "modulate:a", 1.0, 0.5)
-		tween_in.tween_property(label_name, "scale", Vector2(1.15, 1.15), 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tween_in.tween_property(label_name, "scale", Vector2.ONE, 0.15).set_delay(0.35)
+	# ⭐ Update weight
+	if is_instance_valid(weight_label):
+		weight_label.text = "%.2f kg" % _fish_weight
 	
-	_shake(6.0, 0.15)
+	# ⭐ Animate value with counter effect (using C for coins)
+	if is_instance_valid(value_label):
+		value_label.text = "+0 C"
+		var target_value = fish_value
+		var tween_value = create_tween()
+		tween_value.tween_method(func(val): value_label.text = "+%d C" % int(val), 0.0, float(target_value), 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	
-	await get_tree().create_timer(3.0).timeout
+	# ⭐ WAIT FOR "Take Fish" BUTTON CLICK
+	print("📋 Waiting for Take Fish button click...")
+	await _wait_for_tap()
+	print("👆 Tap received! Closing result...")
 	
-	# Fade out
+	# ⭐ Fade out with scale down
 	var tween_out = create_tween().set_parallel(true)
 	
 	if is_instance_valid(result_panel):
-		tween_out.tween_property(result_panel, "modulate:a", 0.0, 0.5)
-		tween_out.tween_property(result_panel, "scale", Vector2(0.9, 0.9), 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+		tween_out.tween_property(result_panel, "modulate:a", 0.0, 0.3)
+		tween_out.tween_property(result_panel, "scale", Vector2(0.8, 0.8), 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 	
-	if is_instance_valid(caught_fish_image):
-		tween_out.tween_property(caught_fish_image, "modulate:a", 0.0, 0.5)
-		tween_out.tween_property(caught_fish_image, "scale", Vector2(0.5, 0.5), 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	await tween_out.finished
 	
-	if is_instance_valid(label_name):
-		var original_pos = label_name.position
-		tween_out.tween_property(label_name, "modulate:a", 0.0, 0.5)
-		tween_out.tween_property(label_name, "position:y", original_pos.y - 40, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-		
-		await tween_out.finished
-		label_name.position = original_pos
-	else:
-		await tween_out.finished
+	# Hide result panel
+	if is_instance_valid(result_panel):
+		result_panel.hide()
 	
 	# Hide root UI
 	if is_instance_valid(root_ui):
@@ -386,6 +403,22 @@ func _success():
 		hud.show_hud()
 	
 	emit_signal("fishing_finished", true, fish, fish_value)
+
+
+func _wait_for_tap() -> void:
+	# Wait for any tap/click/key press
+	while true:
+		await get_tree().process_frame
+		if Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("attack") or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+			break
+
+
+func _start_tap_hint_pulse(hint_label: Label) -> void:
+	if not is_instance_valid(hint_label):
+		return
+	var tween = create_tween().set_loops()
+	tween.tween_property(hint_label, "modulate:a", 0.4, 0.6)
+	tween.tween_property(hint_label, "modulate:a", 1.0, 0.6)
 
 
 func _generate_fish_size() -> float:
@@ -484,12 +517,6 @@ func _set_catch_bar_visual():
 func _set_defaults():
 	if not fish or not rod:
 		return
-		
-	if is_instance_valid(label_name):
-		if _fish_size > 0 and _fish_weight > 0:
-			label_name.text = "%s | %.1fcm | %.2fkg" % [fish.fish_name, _fish_size, _fish_weight]
-		else:
-			label_name.text = fish.fish_name
 	
 	_fish_seed = randf() * 1000.0
 	_bar_pos = 0.5
@@ -605,7 +632,7 @@ func _time_freeze(seconds: float):
 
 
 func _stop_all_sounds():
-	_is_reeling = false  
+	_is_reeling = false
 	
 	if is_instance_valid(minigame_sound):
 		minigame_sound.stop()

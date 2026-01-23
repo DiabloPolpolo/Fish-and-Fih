@@ -277,8 +277,9 @@ func _start_mini_game() -> void:
 	fishing_minigame.fish = random_fish
 	fishing_minigame.rod = default_rod
 
-	# Connect signal
+	# Connect signals
 	fishing_minigame.connect(\"fishing_finished\", _on_fishing_mini_done)
+	fishing_minigame.connect(\"play_end_animation\", _on_play_end_animation)
 	
 	# ⭐ Wait 1 frame lagi sebelum start untuk flush input
 	await get_tree().process_frame
@@ -286,6 +287,22 @@ func _start_mini_game() -> void:
 	# Start
 	fishing_minigame.start_minigame()
 	print(\"🎮 Minigame dimulai dengan: %s\" % random_fish.fish_name)
+
+
+# ⭐ NEW: Handle early animation signal from minigame
+func _on_play_end_animation() -> void:
+	print(\"🎬 Received play_end_animation signal - starting end_fih\")
+	
+	# Set sprite visible
+	animated_sprite_2d.visible = true
+	
+	# Play end_fih animation
+	if animated_sprite_2d.sprite_frames.has_animation(\"end_fih\"):
+		animated_sprite_2d.play(\"end_fih\")
+		print(\"🎬 Playing end_fih animation\")
+	else:
+		animated_sprite_2d.play(\"idle\")
+		print(\"⚠️ end_fih animation not found, playing idle\")
 
 
 func _on_fishing_mini_done(success: bool, caught_fish: FishType, value: int) -> void:
@@ -301,44 +318,20 @@ func _on_fishing_mini_done(success: bool, caught_fish: FishType, value: int) -> 
 		fishing_minigame.queue_free()
 		fishing_minigame = null
 
-	# SET FLAG ENDING
-	is_ending_fishing = true
-	in_minigame = false
-	
-	print(\"🔒 Input still LOCKED for ending animation\")
-	
-	# Set sprite visible
-	animated_sprite_2d.visible = true
-	
-	# Pilih animasi yang ada
-	var end_anim = \"idle\"
-	if animated_sprite_2d.sprite_frames.has_animation(\"end_fih\"):
-		end_anim = \"end_fih\"
-	elif animated_sprite_2d.sprite_frames.has_animation(\"bite\"):
-		end_anim = \"bite\"
-	
-	print(\"🎬 Playing animation: \", end_anim)
-	animated_sprite_2d.play(end_anim)
-	
-	# Calculate duration
-	var frame_count = animated_sprite_2d.sprite_frames.get_frame_count(end_anim)
-	var fps = animated_sprite_2d.sprite_frames.get_animation_speed(end_anim)
-	var duration = (frame_count / fps if fps > 0 else 1.0) + 0.2
-	
-	print(\"🎬 Waiting %.2fs for animation...\" % duration)
-	await get_tree().create_timer(duration).timeout
-	
-	# Reset states
+	# ⭐ Animation sudah diplay via play_end_animation signal, 
+	# jadi langsung reset states
 	is_ending_fishing = false
+	in_minigame = false
 	startFishing = false
 	fishBitten = false
 	waitForFish = false
 	
-	# ⭐ UNLOCK input setelah semua selesai
+	# ⭐ UNLOCK input
 	can_accept_input = true
 	print(\"🔓 Input UNLOCKED - ready for next fishing\")
 	
-	# Back to idle
+	# Ensure sprite visible and back to idle
+	animated_sprite_2d.visible = true
 	animated_sprite_2d.play(\"idle\")
 	print(\"🎬 Back to idle - can move now\")
 
@@ -554,7 +547,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_1jyia")
 }],
-"loop": false,
+"loop": true,
 "name": &"wait",
 "speed": 3.0
 }, {
